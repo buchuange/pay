@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <div id="qrcode"></div>
+  <script th:inline="javascript">
+      var qrcode = new QRCode("qrcode", {
+          text: [[${codeUrl}]],
+          width: 125,
+          height: 125,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+      });
+
+      $(function () {
+          // 定时器
+          setInterval(function () {
+              console.log("开始查询支付状态")
+              $.ajax({
+                  url: '/pay/queryByOrderId',
+                  data: {
+                      'orderId': [[${orderId}]]
+                  },
+                  success: function (result) {
+                      console.log(result)
+                      if (result.platformStatus != null & result.platformStatus === "SUCCESS") {
+                          location.href = [[${returnUrl}]];
+                      }
+                  },
+                  error: function (result) {
+                      alert(result)
+                  }
+              })
+          }, 2000)
+      })
+  </script>
+</body>
+</html>
